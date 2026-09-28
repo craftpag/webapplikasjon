@@ -42,4 +42,4 @@ Avtalen sier hvordan gruppa bruker KI-verktøy i prosjektet. Da bruker alle KI l
 
 | Navn | Dato |
 | ---- | ---- |
-|      |      |
+| Markus | 28.09.2026 |
