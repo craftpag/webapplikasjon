@@ -1,6 +1,6 @@
 # GPT Wrapper med SSE
 
-> Ingress: Rapporten gir en overordnet presentasjon av gruppe W11s GPT Wrapper prosjekt med fokus på gruppens prinsipielle arkitekturvalg og vurderinger i utviklingen av løsningen.
+> Rapporten gir en overordnet presentasjon av gruppe W11s GPT Wrapper prosjekt med fokus på gruppens prinsipielle arkitekturvalg og vurderinger i utviklingen av løsningen.
 
 ## 1. Innledning
 
