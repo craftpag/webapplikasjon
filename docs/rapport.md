@@ -1,6 +1,6 @@
-# Tittel
+# GPT Wrapper med SSE
 
-> Ingress: to–tre setninger om hva applikasjonen er, hvem den er for og hva rapporten tar for seg.
+> Ingress: Rapporten gir en overordnet presentasjon av gruppe W11s GPT Wrapper prosjekt med fokus på gruppens prinsipielle arkitekturvalg og vurderinger i utviklingen av løsningen.
 
 ## 1. Innledning
 
