@@ -1,12 +1,12 @@
 import { ApiStatus } from './components/ApiStatus'
+import { Chat } from './components/Chat'
 import { Layout } from './components/Layout'
-import { Placeholder } from './components/Placeholder'
 
 function App() {
   return (
     <Layout>
       <ApiStatus />
-      <Placeholder title="Forside" />
+      <Chat />
     </Layout>
   )
 }
