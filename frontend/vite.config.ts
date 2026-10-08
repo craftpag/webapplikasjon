@@ -8,7 +8,7 @@ export default defineConfig({
   server: {
     // Videresender /api-kall til backend under utvikling
     proxy: {
-      '/api': 'http://localhost:3000',
+      '/api': 'http://localhost:3001',
     },
   },
   test: {

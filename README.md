@@ -14,7 +14,7 @@ npm run dev
 ```
 
 - Frontend: http://localhost:5173
-- Backend: http://localhost:3000/api/health
+- Backend: http://localhost:3001/api/health
 
 Under utvikling videresender frontend alle `/api`-kall til backend (se `frontend/vite.config.ts`).
 
