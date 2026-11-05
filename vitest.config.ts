@@ -13,5 +13,7 @@ export default defineConfig({
   },
   test: {
     setupFiles: ["./test-setup.ts"],
+    // frontend/ og backend/ (Markus sin chat-app) har egne Vitest-oppsett, se npm run test:chat
+    exclude: ["**/node_modules/**", "frontend/**", "backend/**", "e2e/**"],
   },
 })

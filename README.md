@@ -107,6 +107,30 @@ docs/
 
 Andre valg: Zod validerer alt som kommer utenfra (request body og skjema) før det brukes. Drizzle mot SQLite (`@libsql/client`) i stedet for D1, fordi appen bare kjører lokalt. Egen innlogging med bcrypt og sesjoner. `fetch` direkte mot OpenAI og Anthropic.
 
+## Chat-appen i `frontend/` og `backend/` (RedwoodSDK + Hono)
+
+Repoet har også en annen versjon av chatten, laget av Markus på branchen `frontend-chat` og merget inn i `main`. Den bruker stacken kurset anbefaler: RedwoodSDK som Cloudflare Worker, og en Hono-backend som strømmer svaret fra OpenAI med SSE. Den har ingen database eller innlogging. Hovedappen er Next.js-appen over.
+
+```bash
+cp backend/.env.example backend/.env   # sett OPENAI_API_KEY
+npm run dev:chat                       # frontend http://localhost:5173, backend http://localhost:3001
+npm run test:chat                      # testene i frontend/ og backend/
+```
+
+```
+frontend/src/
+  worker.tsx              Inngangen: mellomvare og ruter (defineApp)
+  app/pages/home.tsx      Forsiden, en serverkomponent
+  app/components/Chat.tsx Klientkomponent: samtalen og SSE-strømmen
+  app/lib/sse.ts          Parser text/event-stream
+  app/lib/backend.ts      Videresender /api/* fra workeren til Hono
+backend/src/
+  app.ts                  Hono-ruter (/api/health, /api/chat)
+  chat.ts                 Strømmer svar fra OpenAI
+```
+
+`npm run test:all` kjører testene i begge appene.
+
 ## KI-bruk
 
 Store deler av koden er laget med KI (Claude Code, blant annet Claude Opus 5.5). Se [docs/ki-avtale.md](docs/ki-avtale.md) for loggen.

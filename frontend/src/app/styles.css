@@ -1,0 +1,192 @@
+:root {
+  --bg: #ffffff;
+  --fg: #111111;
+  --muted: #6b6b6b;
+  --line: #e6e6e6;
+  --soft: #f4f4f4;
+  --ok: #1a7f37;
+  --error: #c62828;
+  color-scheme: light dark;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  line-height: 1.55;
+  color: var(--fg);
+  background: var(--bg);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111111;
+    --fg: #ececec;
+    --muted: #9a9a9a;
+    --line: #2a2a2a;
+    --soft: #1c1c1c;
+    --ok: #4ac26b;
+    --error: #ff7b72;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.status {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.status::before {
+  content: '';
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-right: 0.4rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.status-ok::before {
+  background: var(--ok);
+}
+
+.status-feil::before {
+  background: var(--error);
+}
+
+.main {
+  flex: 1;
+  display: flex;
+}
+
+.chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 0;
+}
+
+.empty {
+  margin: auto 0;
+  text-align: center;
+  color: var(--muted);
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 0 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.message {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.message-user {
+  align-self: flex-end;
+  max-width: 85%;
+  padding: 0.5rem 0.875rem;
+  border-radius: 1rem;
+  background: var(--soft);
+}
+
+.message-assistant {
+  align-self: stretch;
+}
+
+.typing {
+  color: var(--muted);
+}
+
+.error {
+  color: var(--error);
+  font-size: 0.9rem;
+}
+
+.composer {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  padding: 0.5rem 0 1rem;
+  background: var(--bg);
+}
+
+.composer textarea {
+  flex: 1;
+  min-height: 2.75rem;
+  max-height: 12rem;
+  padding: 0.65rem 0.875rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: var(--bg);
+  color: inherit;
+  font: inherit;
+  resize: vertical;
+}
+
+.composer textarea:focus {
+  outline: none;
+  border-color: var(--muted);
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.composer button {
+  padding: 0 1.1rem;
+  border: 0;
+  border-radius: 0.75rem;
+  background: var(--fg);
+  color: var(--bg);
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.reset {
+  align-self: center;
+  padding: 0.25rem 0.5rem;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.reset:hover {
+  color: var(--fg);
+}

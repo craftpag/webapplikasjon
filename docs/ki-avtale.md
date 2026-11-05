@@ -40,6 +40,8 @@ Avtalen sier hvordan gruppa bruker KI-verktøy i prosjektet. Da bruker alle KI l
 | ---- | --- | ------- | ---- |
 | 28.09.2026 | Grunnoppsett av repoet (baseline), oppgaver i GitHub og utkast til dokumenter i `docs/` | Claude | craftpag |
 | 08.10.2026 | SSE-strømming av chat på branchen `chat-med-sse` (ikke merget) | **FYLL INN** | craftpag |
+| 05.11.2026 (commit 20.56) | RedwoodSDK-frontend og Hono-backend med SSE (branch `frontend-chat`): Claude til Vite/Cloudflare-oppsett, `wrangler.jsonc`, tsconfig og grunnlaget i `styles.css`. Ifølge Markus er SSE-parser, chat, proxy og komponenter skrevet selv | Claude (**FYLL INN** modell) | Markus |
+| 05.11.2026 | `prosjektrapport.docx` og `frontend-dokumentasjon.docx` | **FYLL INN** | Markus |
 | 05.11.2026, 21.09–21.39 | Omskriving fra Vite/Hono til Next.js: ruter, service-lag, Drizzle-skjema, server actions, tester, README og rapportutkast. Commit `52bfb70` | Claude Code (modell: **FYLL INN**) | craftpag |
 | 05.11.2026, 21.52–21.58 | Innlogging med bcrypt og sesjoner, `userId` på samtaler, login- og registreringssider, auth-tester | **FYLL INN** | craftpag |
 | 05.11.2026, 21.45–22.30 | Vurdering av repoet mot oppgavekravene og KI-bruken, feilretting, nye tester og dokumentasjon. Commit `f0f61d2` og senere | Claude Code, Claude Opus 5.5 | craftpag |

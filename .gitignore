@@ -21,3 +21,4 @@ data.db*
 *.db
 test-results/
 playwright-report/
+.vs/
