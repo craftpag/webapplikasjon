@@ -23,8 +23,10 @@ Krever Node.js 22 eller nyere.
 ```bash
 git clone https://github.com/craftpag/webapplikasjon.git
 cd webapplikasjon
-npm install
+npm ci
 ```
+
+Bruk `npm ci`, ikke `npm install`. `npm ci` installerer nøyaktig det som står i `package-lock.json`. `npm install` kan på Windows hoppe over de native pakkene til Vite og rolldown (en kjent npm-feil), og da starter ikke testene.
 
 Kopier `.env.example` til `.env` og fyll inn API-nøkler (valgfritt – appen fungerer i demo-modus uten):
 

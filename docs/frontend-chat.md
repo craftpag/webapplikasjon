@@ -41,4 +41,4 @@ Testene kjøres med npm run test:chat fra rota, eller npm test -w frontend, og k
 
 ## 8. Kjøre appen
 
-Kjør npm install i rota, kopier backend/.env.example til backend/.env og sett OPENAI_API_KEY, og start med npm run dev:chat. Frontenden kjører på http://localhost:5173 og backenden på http://localhost:3001/api/health.
+Kjør npm ci i rota, kopier backend/.env.example til backend/.env og sett OPENAI_API_KEY, og start med npm run dev:chat. Frontenden kjører på http://localhost:5173 og backenden på http://localhost:3001/api/health.
