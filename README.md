@@ -40,6 +40,8 @@ npm run dev
 
 Åpne http://localhost:3000 i nettleseren. Registrer en bruker og logg inn.
 
+Databasen (`data.db`) opprettes automatisk ved første start. Hvis du har en gammel `data.db` fra før innloggingen ble lagt til, slett den. Vi bruker ikke migreringer, så nye kolonner blir ikke lagt til i en eksisterende database.
+
 ## Kjøre tester
 
 ```bash
@@ -47,6 +49,13 @@ npm test
 ```
 
 Testene bruker en in-memory database og mocker AI-kall. Ingen API-nøkler trengs.
+
+| Testfil | Type |
+| ------- | ---- |
+| `__tests__/utils.test.ts` | Enhetstester av hjelpefunksjoner |
+| `__tests__/service.test.ts`, `__tests__/auth.test.ts` | Enhetstester av service-laget og innlogging |
+| `__tests__/components.test.tsx` | Komponenttest (Testing Library + jsdom) |
+| `__tests__/hovedflyt.integration.test.ts` | Integrasjonstest av hovedflyten gjennom API-rutene |
 
 ## Prosjektstruktur
 
@@ -60,6 +69,7 @@ src/
       conversations/[id]/messages/route.ts   POST send melding
     chat/[id]/page.tsx                 Server-komponent: chatvisning
     components/
+      AuthForm.tsx                     Klientkomponent: skjema for innlogging og registrering
       ChatForm.tsx                     Klientkomponent: meldingsskjema
       LogoutButton.tsx                 Klientkomponent: logg ut-knapp
     login/page.tsx                     Innloggingsside
@@ -73,23 +83,25 @@ src/
     db.ts                              Drizzle-skjema og SQLite-tilkobling
     auth.ts                            Registrering, innlogging, sesjon
     ai.ts                              Kaller OpenAI / Anthropic via fetch
-    conversation-service.ts            CRUD-operasjoner for samtaler
-  middleware.ts                        Beskytter ruter mot uinnloggede
-__tests__/
-  service.test.ts                      Enhetstester av service-laget
-  auth.test.ts                         Tester av registrering og innlogging
-  utils.test.ts                        Tester av hjelpefunksjoner
+    conversation-service.ts            CRUD-operasjoner for samtaler (filtrert på userId)
+    utils.ts                           Hjelpefunksjoner for validering
+  proxy.ts                             Sender uinnloggede til /login (optimistisk sjekk)
+__tests__/                             Se tabellen under «Kjøre tester»
 docs/
   kravliste.md, ikke-med.md, ki-avtale.md, rapport.md
 ```
 
-## Arkitekturvalg
+## Valg som preger koden
 
-1. **Next.js med App Router**: Server-komponenter for lesing, klientkomponenter for interaktivitet, server actions for skriving.
-2. **Drizzle + SQLite**: Drizzle ORM gir type-sikre spørringer. SQLite via `@libsql/client` trenger ingen ekstern databaseserver.
-3. **bcryptjs**: Passord hashes før de lagres i databasen.
-4. **Cookie-baserte sesjoner**: Enkel sesjonshåndtering med en sessions-tabell.
-5. **Fetch mot AI-API-er**: Vi bruker `fetch` direkte mot OpenAI og Anthropic.
+1. **Service-lag mellom ruter og database.** API-rutene og server actions kaller de samme funksjonene i `src/lib/`. Logikken finnes bare ett sted og kan testes uten Next.js.
+2. **Autorisasjon på serveren, i hvert kall.** `getSession()` sjekker sesjonen i databasen i alle sider, actions og ruter, og alle spørringer filtreres på `userId`. `proxy.ts` er bare en rask sjekk av om cookien finnes.
+3. **Serverkomponenter leser, server actions skriver.** Klientkomponenter brukes bare der vi trenger state, som «Sender…» og feilmeldinger.
+
+Andre valg: Drizzle mot SQLite (`@libsql/client`) i stedet for D1, fordi appen bare kjører lokalt. Egen innlogging med bcrypt og sesjoner. `fetch` direkte mot OpenAI og Anthropic.
+
+## KI-bruk
+
+Store deler av koden er laget med KI (Claude Code, blant annet Claude Opus 5.5). Se [docs/ki-avtale.md](docs/ki-avtale.md) for loggen.
 
 ## Skript
 
@@ -102,7 +114,7 @@ docs/
 
 ## API-endepunkter
 
-Alle endepunkter under `/api/conversations` krever innlogging (session-cookie).
+Alle endepunkter under `/api/conversations` krever innlogging (session-cookie). Uten innlogging gir de 401. Ugyldig input gir 400, og en samtale som ikke finnes eller tilhører en annen gir 404. `DELETE` gir 204, og hvis AI-leverandøren feiler gir sending av melding 502.
 
 | Metode   | Endepunkt                          | Beskrivelse                |
 | -------- | ---------------------------------- | -------------------------- |

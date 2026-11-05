@@ -6,6 +6,7 @@ import { cookies } from "next/headers"
 import { normalizeEmail } from "./utils"
 
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 7 // 7 dager
+const DUMMY_HASH = bcrypt.hashSync("dummy-passord-for-lik-svartid", 10)
 
 export async function register(email: string, name: string, password: string) {
   const cleanEmail = normalizeEmail(email)
@@ -40,10 +41,10 @@ export async function login(email: string, password: string) {
     .from(users)
     .where(eq(users.email, normalizeEmail(email)))
 
-  if (!user) return null
-
-  const ok = await bcrypt.compare(password, user.passwordHash)
-  if (!ok) return null
+  // Sammenlign mot en dummy-hash når brukeren ikke finnes, så svaret tar like
+  // lang tid. Ellers kan man måle seg fram til hvilke e-poster som er registrert.
+  const ok = await bcrypt.compare(password, user?.passwordHash ?? DUMMY_HASH)
+  if (!user || !ok) return null
 
   const token = crypto.randomUUID()
   const now = Date.now()

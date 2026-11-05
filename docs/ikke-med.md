@@ -1,16 +1,18 @@
 # Ikke med
 
-Ting vi vurderte men valgte bort eller ikke rakk:
+Ting vi vurderte, men valgte bort eller ikke rakk:
 
-| #  | Funksjon                           | Grunn                                         |
-| -- | ---------------------------------- | --------------------------------------------- |
-| 1  | Sanntidsstreaming (SSE)            | Prioriterte ferdig CRUD og auth først          |
-| 2  | Admin-panel                        | Ikke nødvendig for MVP                         |
-| 3  | Filvedlegg i samtaler              | For komplekst for tidsrammen                   |
-| 4  | Brukerinnstillinger / profilside   | Kan legges til senere                          |
-| 5  | Valg av spesifikk AI-modell        | Hardkodet til én modell per leverandør         |
-| 6  | Deployment til sky                 | Kjører kun lokalt                              |
-| 7  | Glemt-passord-funksjon             | Krever e-posttjeneste vi ikke har satt opp     |
-| 8  | OAuth-innlogging (Google/GitHub)   | Valgte enkel e-post/passord for å lære auth    |
-| 9  | Mobilapp                           | Kun webgrensesnitt                             |
-| 10 | Rate limiting / brukskvoter        | Ikke prioritert i MVP                          |
+| #  | Funksjon | Grunn |
+| -- | -------- | ----- |
+| 1  | Sanntidsstreaming (SSE) | Påbegynt på branchen `chat-med-sse` i den gamle Vite/Hono-versjonen, men ikke tatt med i Next.js-versjonen |
+| 2  | Deployment til Cloudflare og D1 | Appen kjører bare lokalt med SQLite. Skjemaet er SQLite og kan flyttes til D1 |
+| 3  | Migreringer med drizzle-kit | Tabellene opprettes med `CREATE TABLE IF NOT EXISTS` ved oppstart |
+| 4  | E2e-test med Playwright | Ikke rukket. Hovedflyten er testet manuelt og med integrasjonstest |
+| 5  | Rate limiting på innlogging og AI-kall | Ikke prioritert. Meldinger er begrenset til 4000 tegn |
+| 6  | E-postbekreftelse og glemt passord | Krever e-posttjeneste. Registrering sier derfor rett ut om e-posten er tatt |
+| 7  | OAuth-innlogging (Google/GitHub) | Valgte enkel e-post og passord for å lære hvordan innlogging fungerer |
+| 8  | Admin-panel | Ikke nødvendig for MVP |
+| 9  | Filvedlegg i samtaler | For komplekst for tidsrammen |
+| 10 | Valg av spesifikk AI-modell | Hardkodet til én modell per leverandør |
+| 11 | Brukerinnstillinger og profilside | Kan legges til senere |
+| 12 | Mobilapp | Bare webgrensesnitt |

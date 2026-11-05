@@ -30,13 +30,39 @@ Avtalen sier hvordan gruppa bruker KI-verktøy i prosjektet. Da bruker alle KI l
 
 | Verktøy | Brukes til |
 | ------- | ---------- |
-|         |            |
+| Claude Code med Claude Opus 5.5 (`claude-opus-5-5`) | Vurdering av prosjektet mot kravene, feilretting, tester og dokumentasjon 5. november (se avsnittet under) |
+| Claude Code (modell: **FYLL INN**) | Grunnoppsett 28.09, omskriving til Next.js og innlogging 5. november |
+| ChatGPT | Forklaring av dokumentasjon, eksempler på Next.js App Router |
 
 ## Logg over KI-bruk
 
-| Dato       | Hva                                                                                      | Verktøy | Hvem     |
-| ---------- | ---------------------------------------------------------------------------------------- | ------- | -------- |
-| 28.09.2026 | Grunnoppsett av repoet (baseline), oppgaver i GitHub og utkast til dokumenter i `docs/` | Claude  | craftpag |
+| Dato | Hva | Verktøy | Hvem |
+| ---- | --- | ------- | ---- |
+| 28.09.2026 | Grunnoppsett av repoet (baseline), oppgaver i GitHub og utkast til dokumenter i `docs/` | Claude | craftpag |
+| 08.10.2026 | SSE-strømming av chat på branchen `chat-med-sse` (ikke merget) | **FYLL INN** | craftpag |
+| 05.11.2026, 21.09–21.39 | Omskriving fra Vite/Hono til Next.js: ruter, service-lag, Drizzle-skjema, server actions, tester, README og rapportutkast. Commit `52bfb70` | Claude Code (modell: **FYLL INN**) | craftpag |
+| 05.11.2026, 21.52–21.58 | Innlogging med bcrypt og sesjoner, `userId` på samtaler, login- og registreringssider, auth-tester | **FYLL INN** | craftpag |
+| 05.11.2026, 21.45–22.30 | Vurdering av repoet mot oppgavekravene og KI-bruken, feilretting, nye tester og dokumentasjon. Commit `f0f61d2` og senere | Claude Code, Claude Opus 5.5 | craftpag |
+
+## Detaljer: bruk av Claude Opus 5.5 (5. november)
+
+Opus 5.5 ble brukt i Claude Code den 5. november, etter at appen var skrevet om til Next.js. Commits fra denne økta har linjen `Co-Authored-By: Claude Opus 5.5` og kan spores med `git log`.
+
+| Hva Opus 5.5 gjorde | Filer |
+| ------------------- | ----- |
+| Vurderte repoet mot kravene i «Gruppeinnlevering prosjekt + rapport», inkludert hvor mye KI-bruk som var udokumentert | (ingen kodeendring) |
+| Committet omskrivingen med en melding om at den var KI-generert | commit `52bfb70` |
+| Flyttet hjelpefunksjoner fra testfila inn i appkoden, og skrev testene om til å teste dem | `src/lib/utils.ts`, `__tests__/utils.test.ts` |
+| Endret `middleware.ts` til `proxy.ts`, slik Next 16 krever | `src/proxy.ts` |
+| La til utløpstid på sesjoner, `sameSite` og `secure` på cookien, og normalisering av e-post | `src/lib/auth.ts`, `src/lib/db.ts` |
+| Fikk skjemaene til å vise feilmeldinger med `useActionState` i stedet for å krasje | `src/actions/auth.ts`, `src/actions/conversations.ts`, `src/app/components/AuthForm.tsx`, `src/app/components/ChatForm.tsx`, login- og registreringssidene |
+| Validering og statuskoder i API-et: 400 ved ugyldig JSON, 204 ved sletting, 502 ved AI-feil | `src/app/api/conversations/**` |
+| Atomisk sletting med `db.batch`, og opprettelse av tabeller med `busy_timeout` (rettet `SQLITE_BUSY` under `next build`) | `src/lib/conversation-service.ts`, `src/lib/db.ts` |
+| Komponenttest og integrasjonstest av hovedflyten gjennom API-rutene | `__tests__/components.test.tsx`, `__tests__/hovedflyt.integration.test.ts`, `vitest.config.ts` |
+| Kjørte bygget og testet hovedflyten manuelt i nettleseren | (ingen kodeendring) |
+| Oppdaterte KI-avtalen, rapporten og README | `docs/`, `README.md` |
+
+Kode fra Opus 5.5 er gått gjennom av: **FYLL INN** (regel 2).
 
 ## Godkjent av
 
