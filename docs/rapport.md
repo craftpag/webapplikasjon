@@ -37,7 +37,7 @@ GPT Wrapper er en chat-app der man snakker med KI-modeller fra OpenAI og Anthrop
 
 **SSE over `fetch` med egen parser.** `EventSource` støtter bare GET, og vi sender samtalen med POST. Derfor leser `sse.ts` strømmen selv, også når en hendelse er delt over flere nettverksbiter.
 
-**CSS og sikkerhet.** Styling ligger i én CSS-fil med variabler, maks bredde og mørk modus. `headers.ts` setter CSP og andre sikkerhetshoder før alle ruter.
+**CSS og sikkerhet.** Styling ligger i én CSS-fil med variabler, maks bredde og mørk modus. Den samme CSS-en brukes også i hovedappen (`src/app/globals.css`), så begge appene ser like ut. `headers.ts` setter CSP og andre sikkerhetshoder før alle ruter.
 
 ## 3. Testing
 
