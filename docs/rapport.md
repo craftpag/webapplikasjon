@@ -22,7 +22,7 @@ Målet var å lage en fullstack-app med serverkomponenter, klientkomponenter, se
 
 **Autorisasjon på serveren, i to lag.** `src/proxy.ts` sender brukere uten sesjons-cookie til `/login`, eller gir 401 i API-et. Det er bare en rask, optimistisk sjekk. Den egentlige sjekken skjer i `getSession()`, som slår opp sesjonen i databasen og sjekker utløpstid. I tillegg filtrerer alle spørringer i service-laget på `userId`. Hvis man prøver å lese eller slette andres samtale, får man 404 og ingenting lekker.
 
-**Database.** Drizzle ORM mot SQLite via `@libsql/client`, med fire tabeller vi har designet selv: `users`, `sessions`, `conversations` og `messages`. **Avvik fra kravet:** kravet er Drizzle mot D1. Vi kjører SQLite lokalt fordi appen ikke er deployet til Cloudflare. D1 er også SQLite, så skjemaet kan brukes som det er, men vi har ikke koblet til D1.
+**Database.** Drizzle ORM mot SQLite via `@libsql/client`, med fire tabeller vi har designet selv: `users`, `sessions`, `conversations` og `messages`. Kursplanen godtar annen database enn D1 når man bruker Next.js. Vi valgte lokal SQLite-fil fordi den ikke trenger noen databaseserver, og fordi dataene overlever en omstart. D1 er også SQLite, så skjemaet kan flyttes dit senere.
 
 **Innlogging.** Vi laget egen innlogging med bcrypt-hashing og sesjoner lagret i databasen, i stedet for better-auth. Sesjonen er en tilfeldig UUID i en `httpOnly`-cookie med `sameSite=lax`, og den utløper etter 7 dager.
 
