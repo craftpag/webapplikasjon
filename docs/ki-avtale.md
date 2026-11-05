@@ -59,6 +59,8 @@ Opus 5.5 ble brukt i Claude Code den 5. november, etter at appen var skrevet om 
 | Validering og statuskoder i API-et: 400 ved ugyldig JSON, 204 ved sletting, 502 ved AI-feil | `src/app/api/conversations/**` |
 | Atomisk sletting med `db.batch`, og opprettelse av tabeller med `busy_timeout` (rettet `SQLITE_BUSY` under `next build`) | `src/lib/conversation-service.ts`, `src/lib/db.ts` |
 | Komponenttest og integrasjonstest av hovedflyten gjennom API-rutene | `__tests__/components.test.tsx`, `__tests__/hovedflyt.integration.test.ts`, `vitest.config.ts` |
+| E2e-test av hovedflyten med Playwright | `e2e/hovedflyt.e2e.ts`, `playwright.config.ts` |
+| Validering med Zod-skjemaer i stedet for håndskrevne sjekker | `src/lib/utils.ts`, API-rutene, `src/actions/conversations.ts` |
 | Kjørte bygget og testet hovedflyten manuelt i nettleseren | (ingen kodeendring) |
 | Oppdaterte KI-avtalen, rapporten og README | `docs/`, `README.md` |
 

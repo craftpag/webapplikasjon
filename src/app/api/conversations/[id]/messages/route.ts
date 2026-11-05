@@ -1,6 +1,6 @@
 import { sendMessage, getConversation } from "@/lib/conversation-service"
 import { getSession } from "@/lib/auth"
-import { parseId, validateMessage } from "@/lib/utils"
+import { parseId, sendMessageSchema, firstError } from "@/lib/utils"
 
 // POST /api/conversations/:id/messages – send melding og få AI-svar
 // 201 ved suksess, 400 ved ugyldig input, 401 uten innlogging,
@@ -29,14 +29,13 @@ export async function POST(
     return Response.json({ error: "Ugyldig JSON" }, { status: 400 })
   }
 
-  const content = body?.content
-  const contentError = validateMessage(content)
-  if (contentError) {
-    return Response.json({ error: contentError }, { status: 400 })
+  const parsed = sendMessageSchema.safeParse(body)
+  if (!parsed.success) {
+    return Response.json({ error: firstError(parsed.error) }, { status: 400 })
   }
 
   try {
-    const reply = await sendMessage(conversationId, user.id, content)
+    const reply = await sendMessage(conversationId, user.id, parsed.data.content)
     return Response.json(reply, { status: 201 })
   } catch {
     return Response.json(

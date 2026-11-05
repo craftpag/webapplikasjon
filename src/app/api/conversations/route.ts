@@ -3,7 +3,7 @@ import {
   createConversation,
 } from "@/lib/conversation-service"
 import { getSession } from "@/lib/auth"
-import { isValidProvider, validateTitle } from "@/lib/utils"
+import { createConversationSchema, firstError } from "@/lib/utils"
 
 // GET /api/conversations – innlogget brukers samtaler
 export async function GET() {
@@ -30,20 +30,13 @@ export async function POST(request: Request) {
     return Response.json({ error: "Ugyldig JSON" }, { status: 400 })
   }
 
-  const { title, provider } = body ?? {}
-
-  const titleError = validateTitle(title)
-  if (titleError) {
-    return Response.json({ error: titleError }, { status: 400 })
+  // Zod validerer body før den brukes. Ukjente felter fjernes.
+  const parsed = createConversationSchema.safeParse(body)
+  if (!parsed.success) {
+    return Response.json({ error: firstError(parsed.error) }, { status: 400 })
   }
 
-  if (!isValidProvider(provider)) {
-    return Response.json(
-      { error: "Leverandør må være 'openai' eller 'anthropic'" },
-      { status: 400 }
-    )
-  }
-
-  const convo = await createConversation(user.id, title.trim(), provider)
+  const { title, provider } = parsed.data
+  const convo = await createConversation(user.id, title, provider)
   return Response.json(convo, { status: 201 })
 }

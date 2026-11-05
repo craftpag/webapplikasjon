@@ -36,16 +36,20 @@ Målet var å lage en fullstack-app med serverkomponenter, klientkomponenter, se
 | `DELETE` | `/api/conversations/:id` | 204, 401, 404 |
 | `POST` | `/api/conversations/:id/messages` | 201, 400, 401, 404, 502 |
 
+**Validering med Zod.** TypeScript sjekker bare typer når koden bygges, og data utenfra kan ikke stoles på. Derfor validerer Zod-skjemaer i `src/lib/utils.ts` alt som kommer fra request body og skjema før det brukes. Ukjente felter, som en `userId` sendt fra klienten, blir fjernet.
+
 ## 3. Testing
 
-Vi har 35 Vitest-tester, og de kjøres med `npm test`. Databasen kjører i minnet og AI-kallet er mocket, så testene trenger ingen nøkler.
+Vi har 37 Vitest-tester, og de kjøres med `npm test`. Databasen kjører i minnet og AI-kallet er mocket, så testene trenger ingen nøkler.
 
-- **Enhetstester av hjelpefunksjoner** (`utils.test.ts`): validering av leverandør, id, e-post, tittel og melding.
+- **Enhetstester av hjelpefunksjoner** (`utils.test.ts`): Zod-skjemaene og validering av leverandør, id, e-post, tittel og melding.
 - **Enhetstester av servicen** (`service.test.ts`, `auth.test.ts`): opprett, list, hent og slett samtaler, at man ikke kommer til andres samtaler, og registrering og innlogging.
 - **Komponenttest** (`components.test.tsx`): `ChatForm` sender riktig data og viser feil, og `AuthForm` viser feilen fra server action.
 - **Integrasjonstest av hovedflyten** (`hovedflyt.integration.test.ts`): registrer, logg inn, opprett samtale, send melding og hent samtalen igjen gjennom de ekte API-rutene. Den sjekker også 400, 401, 404 og 204.
 
-E2e-test med Playwright har vi ikke rukket. Hovedflyten er testet manuelt i nettleser.
+- **E2e-test** (`e2e/hovedflyt.e2e.ts`, `npm run test:e2e`): Playwright går gjennom hele hovedflyten i en ekte nettleser, inkludert feil passord. Testen kjører mot en egen database og i demo-modus.
+
+Integrasjonstesten fanger feil i samspillet mellom ruter, service og database, men ikke feil i grensesnittet. Det er det e2e-testen er til for.
 
 ## 4. Bruk av KI
 
@@ -103,7 +107,7 @@ Dette kan vi nå som vi ikke kunne i august:
 | KI-avtale | Vedlegg D, foreløpig bare signert av Markus |
 | Alle starter prosjektet lokalt | **FYLL INN, bekreft** |
 | Grunnkomponenter og utils | `src/app/components/`, `src/lib/utils.ts` |
-| Minst én test som kjører | 35 tester, `npm test` |
+| Minst én test som kjører | 37 Vitest-tester (`npm test`) og 1 e2e-test (`npm run test:e2e`) |
 | Disposisjon for rapporten | Commit `bf8bfcb` (28.09) |
 | I gang med pensum | **FYLL INN** |
 

@@ -56,6 +56,14 @@ Testene bruker en in-memory database og mocker AI-kall. Ingen API-nøkler trengs
 | `__tests__/service.test.ts`, `__tests__/auth.test.ts` | Enhetstester av service-laget og innlogging |
 | `__tests__/components.test.tsx` | Komponenttest (Testing Library + jsdom) |
 | `__tests__/hovedflyt.integration.test.ts` | Integrasjonstest av hovedflyten gjennom API-rutene |
+| `e2e/hovedflyt.e2e.ts` | E2e-test i ekte nettleser (Playwright) |
+
+E2e-testen bygger appen, starter den på port 3100 med en egen database og demo-modus, og går gjennom hovedflyten:
+
+```bash
+npx playwright install chromium   # første gang
+npm run test:e2e
+```
 
 ## Prosjektstruktur
 
@@ -84,7 +92,7 @@ src/
     auth.ts                            Registrering, innlogging, sesjon
     ai.ts                              Kaller OpenAI / Anthropic via fetch
     conversation-service.ts            CRUD-operasjoner for samtaler (filtrert på userId)
-    utils.ts                           Hjelpefunksjoner for validering
+    utils.ts                           Zod-skjemaer og hjelpefunksjoner for validering
   proxy.ts                             Sender uinnloggede til /login (optimistisk sjekk)
 __tests__/                             Se tabellen under «Kjøre tester»
 docs/
@@ -97,7 +105,7 @@ docs/
 2. **Autorisasjon på serveren, i hvert kall.** `getSession()` sjekker sesjonen i databasen i alle sider, actions og ruter, og alle spørringer filtreres på `userId`. `proxy.ts` er bare en rask sjekk av om cookien finnes.
 3. **Serverkomponenter leser, server actions skriver.** Klientkomponenter brukes bare der vi trenger state, som «Sender…» og feilmeldinger.
 
-Andre valg: Drizzle mot SQLite (`@libsql/client`) i stedet for D1, fordi appen bare kjører lokalt. Egen innlogging med bcrypt og sesjoner. `fetch` direkte mot OpenAI og Anthropic.
+Andre valg: Zod validerer alt som kommer utenfra (request body og skjema) før det brukes. Drizzle mot SQLite (`@libsql/client`) i stedet for D1, fordi appen bare kjører lokalt. Egen innlogging med bcrypt og sesjoner. `fetch` direkte mot OpenAI og Anthropic.
 
 ## KI-bruk
 
@@ -110,7 +118,8 @@ Store deler av koden er laget med KI (Claude Code, blant annet Claude Opus 5.5).
 | `npm run dev`   | Starter appen lokalt   |
 | `npm run build` | Bygger for produksjon  |
 | `npm start`     | Kjører bygget versjon  |
-| `npm test`      | Kjører testene         |
+| `npm test`      | Kjører Vitest-testene  |
+| `npm run test:e2e` | Kjører e2e-testen (Playwright) |
 
 ## API-endepunkter
 

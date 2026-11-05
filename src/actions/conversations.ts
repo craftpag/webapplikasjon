@@ -7,10 +7,10 @@ import {
 } from "@/lib/conversation-service"
 import { getSession } from "@/lib/auth"
 import {
-  isValidProvider,
+  createConversationSchema,
+  firstError,
   parseId,
   validateMessage,
-  validateTitle,
 } from "@/lib/utils"
 import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
@@ -22,17 +22,14 @@ export async function createConversationAction(formData: FormData) {
   const user = await getSession()
   if (!user) redirect("/login")
 
-  const title = formData.get("title")
-  const provider = formData.get("provider")
+  const parsed = createConversationSchema.safeParse({
+    title: formData.get("title"),
+    provider: formData.get("provider"),
+  })
+  if (!parsed.success) throw new Error(firstError(parsed.error))
 
-  const titleError = validateTitle(title)
-  if (titleError) throw new Error(titleError)
-
-  if (!isValidProvider(provider)) {
-    throw new Error("Leverandør må være 'openai' eller 'anthropic'")
-  }
-
-  const convo = await createConversation(user.id, (title as string).trim(), provider)
+  const { title, provider } = parsed.data
+  const convo = await createConversation(user.id, title, provider)
   redirect(`/chat/${convo.id}`)
 }
 

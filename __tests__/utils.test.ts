@@ -7,6 +7,8 @@ import {
   validateTitle,
   validateMessage,
   MAX_MESSAGE_LENGTH,
+  createConversationSchema,
+  firstError,
 } from "@/lib/utils"
 
 describe("isValidProvider", () => {
@@ -56,6 +58,24 @@ describe("validateTitle", () => {
   it("avviser tom og for lang tittel", () => {
     expect(validateTitle("   ")).not.toBeNull()
     expect(validateTitle("x".repeat(101))).not.toBeNull()
+  })
+})
+
+describe("createConversationSchema", () => {
+  it("trimmer tittel og fjerner ukjente felter", () => {
+    const result = createConversationSchema.safeParse({
+      title: "  Hei  ",
+      provider: "openai",
+      userId: 999, // skal ikke kunne sendes inn utenfra
+    })
+    expect(result.success).toBe(true)
+    expect(result.data).toEqual({ title: "Hei", provider: "openai" })
+  })
+
+  it("avviser feil type og gir lesbar feilmelding", () => {
+    const result = createConversationSchema.safeParse({ title: 42, provider: "openai" })
+    expect(result.success).toBe(false)
+    expect(firstError(result.error!)).toBe("Tittel er påkrevd")
   })
 })
 
