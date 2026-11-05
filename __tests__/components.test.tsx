@@ -52,6 +52,7 @@ describe("AuthForm", () => {
     const action = vi.fn(async () => ({ error: "Feil e-post eller passord" }))
     render(
       <AuthForm
+        title="Logg inn"
         action={action}
         submitLabel="Logg inn"
         fields={[

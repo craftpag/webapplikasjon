@@ -1,3 +1,5 @@
+import "./globals.css"
+
 export const metadata = {
   title: "GPT Wrapper",
   description: "Chat med OpenAI og Anthropic",
@@ -10,9 +12,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="nb">
-      <body style={{ fontFamily: "system-ui, sans-serif", margin: 0 }}>
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   )
 }

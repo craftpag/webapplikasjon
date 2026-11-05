@@ -6,6 +6,8 @@ import { ChatForm } from "@/app/components/ChatForm"
 import { notFound, redirect } from "next/navigation"
 import Link from "next/link"
 
+// Serverkomponent: henter samtalen på serveren. Bare ChatForm er klientkomponent.
+// Designet (klassene) er fra Markus sin chat i frontend/.
 export default async function ChatPage({
   params,
 }: {
@@ -20,47 +22,41 @@ export default async function ChatPage({
   if (!convo) notFound()
 
   return (
-    <main style={{ maxWidth: 600, margin: "0 auto", padding: 20 }}>
-      <Link href="/">&#8592; Tilbake</Link>
-      <h1>{convo.title}</h1>
-      <p>Leverandør: {convo.provider}</p>
+    <div className="page">
+      <header className="header">
+        <div className="header-right">
+          <Link href="/" className="back">
+            ← Tilbake
+          </Link>
+          <h1 className="title">{convo.title}</h1>
+        </div>
+        <span className="status status-ok">{convo.provider}</span>
+      </header>
 
-      <div style={{ marginBottom: 20 }}>
-        {convo.messages.length === 0 ? (
-          <p>Ingen meldinger ennå. Send en melding under.</p>
-        ) : (
-          convo.messages.map((m) => (
-            <div
-              key={m.id}
-              style={{
-                padding: 10,
-                marginBottom: 8,
-                background: m.role === "user" ? "#e8f4fd" : "#f0f0f0",
-                borderRadius: 4,
-              }}
-            >
-              <strong>{m.role === "user" ? "Du" : "AI"}:</strong> {m.content}
-            </div>
-          ))
-        )}
-      </div>
+      <main className="main">
+        <section className="chat">
+          {convo.messages.length === 0 ? (
+            <p className="empty">Still et spørsmål for å starte.</p>
+          ) : (
+            <ol className="messages" aria-live="polite">
+              {convo.messages.map((m) => (
+                <li key={m.id} className={`message message-${m.role}`}>
+                  {m.content}
+                </li>
+              ))}
+            </ol>
+          )}
 
-      <ChatForm conversationId={convo.id} />
+          <ChatForm conversationId={convo.id} />
 
-      <form action={deleteConversationAction}>
-        <input type="hidden" name="id" value={convo.id} />
-        <button
-          type="submit"
-          style={{
-            padding: 8,
-            color: "red",
-            background: "none",
-            border: "1px solid red",
-          }}
-        >
-          Slett samtale
-        </button>
-      </form>
-    </main>
+          <form action={deleteConversationAction} style={{ alignSelf: "center" }}>
+            <input type="hidden" name="id" value={convo.id} />
+            <button type="submit" className="reset danger">
+              Slett samtale
+            </button>
+          </form>
+        </section>
+      </main>
+    </div>
   )
 }

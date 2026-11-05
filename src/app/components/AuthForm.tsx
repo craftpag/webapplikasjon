@@ -8,45 +8,52 @@ type Field = {
   label: string
   type: "text" | "email" | "password"
   minLength?: number
+  autoComplete?: string
 }
 
 type Props = {
+  title: string
   action: (prev: FormState, formData: FormData) => Promise<FormState>
   fields: Field[]
   submitLabel: string
+  children?: React.ReactNode
 }
 
 // Klientkomponent: felles skjema for innlogging og registrering.
 // Viser feilmeldingen som server action returnerer.
-export function AuthForm({ action, fields, submitLabel }: Props) {
+export function AuthForm({ title, action, fields, submitLabel, children }: Props) {
   const [state, formAction, pending] = useActionState(action, {})
 
   return (
-    <form action={formAction}>
+    <form action={formAction} className="auth">
+      <h2>{title}</h2>
+
       {fields.map((f) => (
-        <div key={f.name} style={{ marginBottom: 12 }}>
-          <label htmlFor={f.name}>{f.label}</label>
-          <br />
+        <label key={f.name} htmlFor={f.name} className="field">
+          {f.label}
           <input
             id={f.name}
             name={f.name}
             type={f.type}
+            className="input"
             required
             minLength={f.minLength}
-            style={{ padding: 8, width: "100%" }}
+            autoComplete={f.autoComplete}
           />
-        </div>
+        </label>
       ))}
 
       {state.error && (
-        <p role="alert" style={{ color: "red" }}>
+        <p role="alert" className="error">
           {state.error}
         </p>
       )}
 
-      <button type="submit" disabled={pending} style={{ padding: "8px 20px" }}>
-        {pending ? "Vent..." : submitLabel}
+      <button type="submit" disabled={pending} className="primary">
+        {pending ? "Vent…" : submitLabel}
       </button>
+
+      {children}
     </form>
   )
 }

@@ -5,6 +5,7 @@ import { LogoutButton } from "./components/LogoutButton"
 import { redirect } from "next/navigation"
 import Link from "next/link"
 
+// Serverkomponent: leser samtalene direkte fra service-laget, filtrert på innlogget bruker
 export default async function Home() {
   const user = await getSession()
   if (!user) redirect("/login")
@@ -12,60 +13,55 @@ export default async function Home() {
   const allConvos = await listConversations(user.id)
 
   return (
-    <main style={{ maxWidth: 600, margin: "0 auto", padding: 20 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h1>GPT Wrapper</h1>
-        <div>
-          <span style={{ marginRight: 8 }}>{user.name}</span>
+    <div className="page">
+      <header className="header">
+        <h1 className="brand">GPT Wrapper</h1>
+        <div className="header-right">
+          <span className="status status-ok">{user.name}</span>
           <LogoutButton />
         </div>
-      </div>
+      </header>
 
-      <p>Chat med OpenAI og Anthropic gjennom ett grensesnitt.</p>
+      <main>
+        <section className="section">
+          <h2>Ny samtale</h2>
+          <form action={createConversationAction} className="row">
+            <input
+              name="title"
+              className="input"
+              placeholder="Tittel på samtale"
+              aria-label="Tittel"
+              required
+              maxLength={100}
+            />
+            <select name="provider" className="select" aria-label="Leverandør">
+              <option value="openai">OpenAI</option>
+              <option value="anthropic">Anthropic</option>
+            </select>
+            <button type="submit" className="primary">
+              Opprett
+            </button>
+          </form>
+        </section>
 
-      <form action={createConversationAction} style={{ marginBottom: 24 }}>
-        <div style={{ marginBottom: 8 }}>
-          <input
-            name="title"
-            placeholder="Tittel på samtale"
-            required
-            style={{ padding: 8, marginRight: 8 }}
-          />
-          <select name="provider" style={{ padding: 8, marginRight: 8 }}>
-            <option value="openai">OpenAI</option>
-            <option value="anthropic">Anthropic</option>
-          </select>
-          <button type="submit" style={{ padding: 8 }}>
-            Opprett
-          </button>
-        </div>
-      </form>
-
-      <h2>Samtaler</h2>
-      {allConvos.length === 0 ? (
-        <p>Ingen samtaler ennå. Opprett en over.</p>
-      ) : (
-        <ul style={{ listStyle: "none", padding: 0 }}>
-          {allConvos.map((c) => (
-            <li
-              key={c.id}
-              style={{
-                padding: 12,
-                marginBottom: 8,
-                border: "1px solid #ddd",
-                borderRadius: 4,
-              }}
-            >
-              <Link
-                href={`/chat/${c.id}`}
-                style={{ textDecoration: "none", color: "inherit" }}
-              >
-                <strong>{c.title}</strong> – {c.provider}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </main>
+        <section className="section">
+          <h2>Samtaler</h2>
+          {allConvos.length === 0 ? (
+            <p className="hint">Ingen samtaler ennå. Opprett en over.</p>
+          ) : (
+            <ul className="conversations">
+              {allConvos.map((c) => (
+                <li key={c.id}>
+                  <Link href={`/chat/${c.id}`}>
+                    <span className="conversation-title">{c.title}</span>
+                    <span className="conversation-provider">{c.provider}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </main>
+    </div>
   )
 }
