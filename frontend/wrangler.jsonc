@@ -1,0 +1,17 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "webapplikasjon-chat",
+  "main": "src/worker.tsx",
+  "compatibility_date": "2025-08-21",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    // Hvor Hono-backenden kjører. Workeren videresender /api/* hit
+    "BACKEND_URL": "http://localhost:3001"
+  }
+}
