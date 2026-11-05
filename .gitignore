@@ -13,4 +13,8 @@ data.db
 .idea/
 .vscode/*
 !.vscode/extensions.json
-tsconfig.tsbuildinfo
+
+# Lokal database og byggefiler
+data.db*
+*.tsbuildinfo
+.playwright-mcp/

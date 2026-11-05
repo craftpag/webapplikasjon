@@ -1,20 +1,24 @@
-import { eq, desc } from "drizzle-orm"
+import { eq, desc, and, asc } from "drizzle-orm"
 import { db, conversations, messages } from "./db"
 import { askAI } from "./ai"
 
-// Hent alle samtaler
-export async function listConversations() {
+export async function listConversations(userId: number) {
   return db
     .select()
     .from(conversations)
+    .where(eq(conversations.userId, userId))
     .orderBy(desc(conversations.createdAt))
 }
 
-// Opprett ny samtale
-export async function createConversation(title: string, provider: string) {
+export async function createConversation(
+  userId: number,
+  title: string,
+  provider: string
+) {
   const [result] = await db
     .insert(conversations)
     .values({
+      userId,
       title,
       provider,
       createdAt: new Date().toISOString(),
@@ -24,12 +28,11 @@ export async function createConversation(title: string, provider: string) {
   return result
 }
 
-// Hent én samtale med meldinger
-export async function getConversation(id: number) {
+export async function getConversation(id: number, userId: number) {
   const [convo] = await db
     .select()
     .from(conversations)
-    .where(eq(conversations.id, id))
+    .where(and(eq(conversations.id, id), eq(conversations.userId, userId)))
 
   if (!convo) return null
 
@@ -37,57 +40,71 @@ export async function getConversation(id: number) {
     .select()
     .from(messages)
     .where(eq(messages.conversationId, id))
-    .orderBy(messages.createdAt)
+    .orderBy(asc(messages.id))
 
   return { ...convo, messages: msgs }
 }
 
-// Slett en samtale og alle meldingene
-export async function deleteConversation(id: number) {
-  await db.delete(messages).where(eq(messages.conversationId, id))
-  await db.delete(conversations).where(eq(conversations.id, id))
-}
-
-// Send melding og få svar fra AI
-export async function sendMessage(conversationId: number, content: string) {
-  // Finn samtalen
+export async function deleteConversation(id: number, userId: number) {
   const [convo] = await db
     .select()
     .from(conversations)
-    .where(eq(conversations.id, conversationId))
+    .where(and(eq(conversations.id, id), eq(conversations.userId, userId)))
 
   if (!convo) throw new Error("Samtale ikke funnet")
 
-  // Lagre brukerens melding
-  await db.insert(messages).values({
-    conversationId,
-    role: "user",
-    content,
-    createdAt: new Date().toISOString(),
-  })
+  // batch kjører begge slettingene atomisk (alt eller ingenting).
+  // db.transaction() åpner en ny tilkobling i libsql, og fungerer ikke med :memory:.
+  await db.batch([
+    db.delete(messages).where(eq(messages.conversationId, id)),
+    db.delete(conversations).where(eq(conversations.id, id)),
+  ])
+}
 
-  // Hent hele historikken for kontekst
+export async function sendMessage(
+  conversationId: number,
+  userId: number,
+  content: string
+) {
+  const [convo] = await db
+    .select()
+    .from(conversations)
+    .where(
+      and(
+        eq(conversations.id, conversationId),
+        eq(conversations.userId, userId)
+      )
+    )
+
+  if (!convo) throw new Error("Samtale ikke funnet")
+
   const allMsgs = await db
     .select()
     .from(messages)
     .where(eq(messages.conversationId, conversationId))
-    .orderBy(messages.createdAt)
+    .orderBy(asc(messages.id))
 
-  const chatHistory = allMsgs.map((m) => ({
-    role: m.role,
-    content: m.content,
-  }))
+  const chatHistory = [
+    ...allMsgs.map((m) => ({ role: m.role, content: m.content })),
+    { role: "user", content },
+  ]
 
-  // Kall AI
   const answer = await askAI(convo.provider, chatHistory)
 
-  // Lagre svaret
-  await db.insert(messages).values({
-    conversationId,
-    role: "assistant",
-    content: answer,
-    createdAt: new Date().toISOString(),
-  })
+  await db.insert(messages).values([
+    {
+      conversationId,
+      role: "user",
+      content,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      conversationId,
+      role: "assistant",
+      content: answer,
+      createdAt: new Date().toISOString(),
+    },
+  ])
 
   return { role: "assistant" as const, content: answer }
 }

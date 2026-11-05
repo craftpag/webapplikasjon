@@ -1,33 +1,47 @@
 import { sendMessage, getConversation } from "@/lib/conversation-service"
+import { getSession } from "@/lib/auth"
+import { parseId, validateMessage } from "@/lib/utils"
 
-// POST /api/conversations/:id/messages - send melding og få AI-svar
+// POST /api/conversations/:id/messages – send melding og få AI-svar
+// 201 ved suksess, 400 ved ugyldig input, 401 uten innlogging,
+// 404 for ukjent samtale og 502 hvis AI-leverandøren feiler.
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params
-  const conversationId = Number(id)
+  const user = await getSession()
+  if (!user) {
+    return Response.json({ error: "Ikke innlogget" }, { status: 401 })
+  }
 
-  // Sjekk at samtalen finnes
-  const convo = await getConversation(conversationId)
-  if (!convo) {
+  const conversationId = parseId((await params).id)
+  const convo = conversationId
+    ? await getConversation(conversationId, user.id)
+    : null
+  if (!conversationId || !convo) {
     return Response.json({ error: "Samtale ikke funnet" }, { status: 404 })
   }
 
-  const { content } = await request.json()
+  let body
+  try {
+    body = await request.json()
+  } catch {
+    return Response.json({ error: "Ugyldig JSON" }, { status: 400 })
+  }
 
-  if (!content || content.trim() === "") {
-    return Response.json(
-      { error: "Meldingen kan ikke være tom" },
-      { status: 400 }
-    )
+  const content = body?.content
+  const contentError = validateMessage(content)
+  if (contentError) {
+    return Response.json({ error: contentError }, { status: 400 })
   }
 
   try {
-    const reply = await sendMessage(conversationId, content)
+    const reply = await sendMessage(conversationId, user.id, content)
     return Response.json(reply, { status: 201 })
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : "Noe gikk galt"
-    return Response.json({ error: msg }, { status: 502 })
+  } catch {
+    return Response.json(
+      { error: "Fikk ikke svar fra AI-leverandøren" },
+      { status: 502 }
+    )
   }
 }

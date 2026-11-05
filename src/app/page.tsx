@@ -1,16 +1,28 @@
 import { listConversations } from "@/lib/conversation-service"
+import { getSession } from "@/lib/auth"
 import { createConversationAction } from "@/actions/conversations"
+import { LogoutButton } from "./components/LogoutButton"
+import { redirect } from "next/navigation"
+import Link from "next/link"
 
-// Server-komponent: leser data direkte fra databasen
 export default async function Home() {
-  const allConvos = await listConversations()
+  const user = await getSession()
+  if (!user) redirect("/login")
+
+  const allConvos = await listConversations(user.id)
 
   return (
     <main style={{ maxWidth: 600, margin: "0 auto", padding: 20 }}>
-      <h1>GPT Wrapper</h1>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <h1>GPT Wrapper</h1>
+        <div>
+          <span style={{ marginRight: 8 }}>{user.name}</span>
+          <LogoutButton />
+        </div>
+      </div>
+
       <p>Chat med OpenAI og Anthropic gjennom ett grensesnitt.</p>
 
-      {/* Server action: oppretter samtale på serveren */}
       <form action={createConversationAction} style={{ marginBottom: 24 }}>
         <div style={{ marginBottom: 8 }}>
           <input
@@ -44,9 +56,12 @@ export default async function Home() {
                 borderRadius: 4,
               }}
             >
-              <a href={`/chat/${c.id}`} style={{ textDecoration: "none" }}>
-                <strong>{c.title}</strong> — {c.provider}
-              </a>
+              <Link
+                href={`/chat/${c.id}`}
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                <strong>{c.title}</strong> – {c.provider}
+              </Link>
             </li>
           ))}
         </ul>

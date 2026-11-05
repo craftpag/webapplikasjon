@@ -5,38 +5,69 @@ import {
   deleteConversation,
   sendMessage,
 } from "@/lib/conversation-service"
+import { getSession } from "@/lib/auth"
+import {
+  isValidProvider,
+  parseId,
+  validateMessage,
+  validateTitle,
+} from "@/lib/utils"
 import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
 
-// Server action: opprett ny samtale
-export async function createConversationAction(formData: FormData) {
-  const title = formData.get("title") as string
-  const provider = formData.get("provider") as string
+// Alle actions starter med å sjekke sesjonen på serveren. Service-laget
+// filtrerer i tillegg på userId, så man bare kan endre egne samtaler.
 
-  if (!title || !provider) {
-    throw new Error("Tittel og leverandør er påkrevd")
+export async function createConversationAction(formData: FormData) {
+  const user = await getSession()
+  if (!user) redirect("/login")
+
+  const title = formData.get("title")
+  const provider = formData.get("provider")
+
+  const titleError = validateTitle(title)
+  if (titleError) throw new Error(titleError)
+
+  if (!isValidProvider(provider)) {
+    throw new Error("Leverandør må være 'openai' eller 'anthropic'")
   }
 
-  const convo = await createConversation(title, provider)
+  const convo = await createConversation(user.id, (title as string).trim(), provider)
   redirect(`/chat/${convo.id}`)
 }
 
-// Server action: send melding
-export async function sendMessageAction(formData: FormData) {
-  const conversationId = Number(formData.get("conversationId"))
-  const content = formData.get("content") as string
+export type SendMessageState = { error?: string }
 
-  if (!content?.trim()) {
-    throw new Error("Meldingen kan ikke være tom")
+export async function sendMessageAction(
+  formData: FormData
+): Promise<SendMessageState> {
+  const user = await getSession()
+  if (!user) redirect("/login")
+
+  const conversationId = parseId(formData.get("conversationId"))
+  if (!conversationId) return { error: "Ugyldig samtale" }
+
+  const content = formData.get("content")
+  const contentError = validateMessage(content)
+  if (contentError) return { error: contentError }
+
+  try {
+    await sendMessage(conversationId, user.id, content as string)
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Noe gikk galt" }
   }
 
-  await sendMessage(conversationId, content)
   revalidatePath(`/chat/${conversationId}`)
+  return {}
 }
 
-// Server action: slett samtale
 export async function deleteConversationAction(formData: FormData) {
-  const id = Number(formData.get("id"))
-  await deleteConversation(id)
+  const user = await getSession()
+  if (!user) redirect("/login")
+
+  const id = parseId(formData.get("id"))
+  if (!id) throw new Error("Ugyldig samtale")
+
+  await deleteConversation(id, user.id)
   redirect("/")
 }

@@ -10,9 +10,11 @@ GPT Wrapper er en chat-app som lar brukere snakke med ulike KI-modeller gjennom 
 
 ## Hovedflyt
 
-1. Bruker oppretter en ny samtale og velger leverandør (OpenAI eller Anthropic)
-2. Bruker sender meldinger og får svar fra AI-en
-3. Bruker kan se samtalehistorikken og slette samtaler
+1. Bruker registrerer seg med e-post, navn og passord
+2. Bruker logger inn og får tilgang til beskyttede sider
+3. Bruker oppretter en ny samtale og velger leverandør (OpenAI eller Anthropic)
+4. Bruker sender meldinger og får svar fra AI-en
+5. Bruker kan se samtalehistorikken og slette samtaler
 
 ## Kom i gang
 
@@ -36,7 +38,7 @@ Start appen:
 npm run dev
 ```
 
-Åpne http://localhost:3000 i nettleseren.
+Åpne http://localhost:3000 i nettleseren. Registrer en bruker og logg inn.
 
 ## Kjøre tester
 
@@ -52,30 +54,42 @@ Testene bruker en in-memory database og mocker AI-kall. Ingen API-nøkler trengs
 src/
   app/
     api/
-      health/route.ts               Helsesjekk-endepunkt
-      conversations/route.ts         GET liste, POST opprett samtale
-      conversations/[id]/route.ts    GET hent, DELETE slett samtale
+      health/route.ts                  Helsesjekk-endepunkt
+      conversations/route.ts           GET liste, POST opprett samtale
+      conversations/[id]/route.ts      GET hent, DELETE slett samtale
       conversations/[id]/messages/route.ts   POST send melding
-    chat/[id]/page.tsx               Server-komponent: chatvisning
-    layout.tsx                       Root layout
-    page.tsx                         Server-komponent: forsiden med form
+    chat/[id]/page.tsx                 Server-komponent: chatvisning
+    components/
+      ChatForm.tsx                     Klientkomponent: meldingsskjema
+      LogoutButton.tsx                 Klientkomponent: logg ut-knapp
+    login/page.tsx                     Innloggingsside
+    register/page.tsx                  Registreringsside
+    layout.tsx                         Root layout
+    page.tsx                           Server-komponent: forsiden
   actions/
-    conversations.ts                 Server actions for skriving av data
+    auth.ts                            Server actions for innlogging
+    conversations.ts                   Server actions for samtaler
   lib/
-    db.ts                            Drizzle-skjema og SQLite-tilkobling
-    ai.ts                            Kaller OpenAI / Anthropic via fetch
-    conversation-service.ts          CRUD-operasjoner for samtaler og meldinger
+    db.ts                              Drizzle-skjema og SQLite-tilkobling
+    auth.ts                            Registrering, innlogging, sesjon
+    ai.ts                              Kaller OpenAI / Anthropic via fetch
+    conversation-service.ts            CRUD-operasjoner for samtaler
+  middleware.ts                        Beskytter ruter mot uinnloggede
 __tests__/
-  service.test.ts                    Enhets- og integrasjonstester (Vitest)
+  service.test.ts                      Enhetstester av service-laget
+  auth.test.ts                         Tester av registrering og innlogging
+  utils.test.ts                        Tester av hjelpefunksjoner
 docs/
   kravliste.md, ikke-med.md, ki-avtale.md, rapport.md
 ```
 
 ## Arkitekturvalg
 
-1. **Next.js med App Router**: Server-komponenter for å lese data, server actions for å skrive. Ingen client-side state-håndtering.
+1. **Next.js med App Router**: Server-komponenter for lesing, klientkomponenter for interaktivitet, server actions for skriving.
 2. **Drizzle + SQLite**: Drizzle ORM gir type-sikre spørringer. SQLite via `@libsql/client` trenger ingen ekstern databaseserver.
-3. **Fetch mot AI-API-er**: Vi bruker `fetch` direkte mot OpenAI og Anthropic for full kontroll over API-kallene.
+3. **bcryptjs**: Passord hashes før de lagres i databasen.
+4. **Cookie-baserte sesjoner**: Enkel sesjonshåndtering med en sessions-tabell.
+5. **Fetch mot AI-API-er**: Vi bruker `fetch` direkte mot OpenAI og Anthropic.
 
 ## Skript
 
@@ -87,6 +101,8 @@ docs/
 | `npm test`      | Kjører testene         |
 
 ## API-endepunkter
+
+Alle endepunkter under `/api/conversations` krever innlogging (session-cookie).
 
 | Metode   | Endepunkt                          | Beskrivelse                |
 | -------- | ---------------------------------- | -------------------------- |

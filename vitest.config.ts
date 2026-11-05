@@ -7,6 +7,10 @@ export default defineConfig({
       "@": resolve(__dirname, "src"),
     },
   },
+  esbuild: {
+    // Next bruker "react-jsx" i tsconfig; Vitest trenger å vite det samme
+    jsx: "automatic",
+  },
   test: {
     setupFiles: ["./test-setup.ts"],
   },
