@@ -1,7 +1,9 @@
 node_modules/
+.next/
 dist/
 coverage/
 *.log
+data.db
 
 .env
 .env.*
@@ -11,3 +13,4 @@ coverage/
 .idea/
 .vscode/*
 !.vscode/extensions.json
+tsconfig.tsbuildinfo
