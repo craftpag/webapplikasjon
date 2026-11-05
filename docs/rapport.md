@@ -32,11 +32,13 @@ Hovedflyten: brukeren logger inn, skriver en tittel og velger leverandør på fo
 
 ## 3. KI
 
-Begge brukte Claude. Philip brukte Claude Code med Claude Opus 4.6 til å skrive hovedappen om fra Vite og Hono til Next.js og til å legge til innloggingen den 5. november, så det meste av koden i rota er KI-generert. Etterpå brukte vi Claude Opus 5.5 til å vurdere repoet mot oppgavekravene. Vurderingen fant feil i KI-koden: en test av hjelpefunksjoner testet funksjoner som var definert i selve testfila, feil passord ga en krasjside, og middleware.ts var utdatert i Next 16. Opus 5.5 rettet feilene, la til tester og tok designet fra chat-appen i bruk i hovedappen. Alle commits fra den økta er merket med Co-Authored-By: Claude Opus 5.5.
+Begge brukte Claude. Philip brukte Claude Code med Claude Opus 4.6 til å skrive hovedappen om fra Vite og Hono til Next.js og til å legge til innloggingen 5. november. Det meste av koden i rota er derfor laget med KI. Det fungerte godt for oppsett, ruter og service-laget, som følger kjente mønstre.
 
-Markus brukte Claude til konfigurasjonen av Vite med Cloudflare-pluginen, wrangler.jsonc og tsconfig, og som utgangspunkt for CSS-variablene. Ifølge Markus skrev han selv SSE-parseren, chat-funksjonen, proxyen og komponentene. Generert Cloudflare-konfigurasjon bygde ofte på eldre API-versjoner, så importstier og typer måtte rettes mot versjonen vi faktisk kjører.
+Etterpå brukte vi Claude Opus 5.5 til å vurdere repoet mot oppgavekravene, og vurderingen fant feil i den genererte koden. En test av hjelpefunksjoner testet funksjoner som var definert i selve testfila og ikke appens egen kode, feil passord ga en krasjside i stedet for en feilmelding, og middleware.ts var utdatert i Next 16, der filen heter proxy.ts. Vi rettet feilene, la til komponenttest, integrasjonstest og e2e-test, og tok designet fra chat-appen i bruk i hovedappen. Commits fra den økta er merket med Co-Authored-By: Claude Opus 5.5, så det går an å se i historikken hva som er gjort med KI.
 
-Vi sitter igjen med at KI tok oss raskt til en app som fungerer, men at vi brukte det for sent og for mye på én gang. Mye kode kom inn den siste dagen uten at den andre gikk gjennom den først, og det bryter vår egen KI-avtale. Vi har lært at KI-kode må leses og testes like kritisk som annen kode, og at bruken må føres i loggen fortløpende. Hele loggen står i vedlegg D.
+Markus brukte Claude til konfigurasjonen av Vite med Cloudflare-pluginen, wrangler.jsonc og tsconfig, og som utgangspunkt for CSS-variablene. SSE-parseren, chat-funksjonen, proxyen og komponentene oppgir han at han skrev selv. Generert Cloudflare-konfigurasjon bygde ofte på eldre API-versjoner, så importstier og typer måtte rettes mot versjonen vi kjører.
+
+Det vi sitter igjen med, er at KI gjorde det mulig å komme langt på kort tid, men at vi tok det i bruk for sent og i for store biter. Vi fulgte ikke regelen i KI-avtalen om at den andre skal gå gjennom KI-koden før den merges. Feilene over viser hvorfor den regelen finnes: koden så riktig ut og testene var grønne, men en av testene testet ingenting. Vi har lært å lese og teste KI-kode like kritisk som vår egen, og å føre KI-bruken i loggen underveis. Hele loggen står i vedlegg D.
 
 ## 4. Utfordringer
 
